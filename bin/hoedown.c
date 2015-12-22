@@ -1,5 +1,6 @@
 #include "document.h"
 #include "html.h"
+#include "manpage.h"
 
 #include "common.h"
 #include "noop.h"
@@ -11,7 +12,8 @@
 
 enum renderer_type {
   RENDERER_HTML,
-  RENDERER_NOOP
+  RENDERER_NOOP,
+  RENDERER_MANPAGE
 };
 
 struct preset_info {
@@ -138,6 +140,12 @@ static void print_help(const char *basename) {
   print_option(  0, "inline", "Parse inline-level Markdown.");
   print_option('h', "help", "Print this help text.");
   print_option('v', "version", "Print Hoedown version.");
+  print_option(  0, "man", "Render Manpage.");
+  print_option(  0, "man-th-t", "Manpage TitleHeader Title");
+  print_option(  0, "man-th-s", "Manpage TitleHeader Section");
+  print_option(  0, "man-th-e1", "Manpage TitleHeader Extra 1");
+  print_option(  0, "man-th-e2", "Manpage TitleHeader Extra 2");
+  print_option(  0, "man-th-e3", "Manpage TitleHeader Extra 3");
   printf("\n");
 
   /* base presets */
@@ -184,6 +192,7 @@ struct option_data {
 
   /* renderer */
   enum renderer_type renderer;
+  manpage_TH_t mpth;
 
   /* parsing */
   int is_block;
@@ -349,6 +358,12 @@ static int parse_long_option(char *opt, char *next, void *opaque) {
     data->renderer = RENDERER_NOOP;
     return 1;
   }
+  if (strcmp(opt, "man")==0) { data->renderer = RENDERER_MANPAGE; return 1; }
+  if (strcmp(opt, "man-th-t")==0 && next) { data->mpth.title = next; return 2; }
+  if (strcmp(opt, "man-th-s")==0 && next) { data->mpth.section = next; return 2; }
+  if (strcmp(opt, "man-th-e1")==0 && next) { data->mpth.extra1 = next; return 2; }
+  if (strcmp(opt, "man-th-e2")==0 && next) { data->mpth.extra2 = next; return 2; }
+  if (strcmp(opt, "man-th-e3")==0 && next) { data->mpth.extra3 = next; return 2; }
 
   if (parse_preset_option(opt, data) || parse_category_option(opt, data) || parse_flag_option(opt, data) || parse_negative_option(opt, data))
     return 1;
@@ -382,10 +397,10 @@ int main(int argc, char **argv) {
   void (*renderer_free)(hoedown_renderer *) = NULL;
   hoedown_document *document;
 
+  /* zero all option data */
+  memset((void *)&data, 0 ,sizeof(data));
   /* Parse options */
   data.basename = argv[0];
-  data.done = 0;
-  data.show_time = 0;
   data.iunit = DEF_IUNIT;
   data.filename = NULL;
   data.renderer = RENDERER_HTML;
@@ -425,6 +440,10 @@ int main(int argc, char **argv) {
     case RENDERER_NOOP:
       renderer = hoedown_noop_renderer_new();
       renderer_free = hoedown_noop_renderer_free;
+      break;
+    case RENDERER_MANPAGE:
+      renderer = hoedown_manpage_renderer_new(&data.mpth, data.toc_level);
+      renderer_free = hoedown_manpage_renderer_free;
       break;
   };
 

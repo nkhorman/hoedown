@@ -1,7 +1,12 @@
 Hoedown
 =======
 
-[![Build Status](https://travis-ci.org/hoedown/hoedown.png?branch=develop)](https://travis-ci.org/hoedown/hoedown)
+This is a fork of [hoedown](https://github.com/hoedown/hoedown) that attempts to add some
+support for rendering to a man page using the light weight nroff man macros vs. the nroff mdoc
+macros. It is very much a hack in that the manpage renderer is a copy of the html renderer, and modified
+just enough to render very simple markdown documents. A number of HTML renderer functions have been
+left in place, with the addition of a line of exit code denoting which function needs to be implemented
+for code completion of the particular markdown syntax functionality.
 
 `Hoedown` is a revived fork of [Sundown](https://github.com/vmg/sundown),
 the Markdown parser based on the original code of the
