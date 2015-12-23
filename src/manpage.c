@@ -63,15 +63,14 @@ static void escape_html(hoedown_buffer *ob, const uint8_t *source, size_t length
 	hoedown_buffer_put(ob, source, length);
 }
 
+/*
 static void escape_href(hoedown_buffer *ob, const uint8_t *source, size_t length)
 {
-	/*hoedown_escape_href(ob, source, length);*/
+	/ *hoedown_escape_href(ob, source, length);* /
 	hoedown_buffer_put(ob, source, length);
 }
+*/
 
-/********************
- * GENERIC RENDERER *
- ********************/
 static int
 rndr_autolink(hoedown_buffer *ob, const hoedown_buffer *link, hoedown_autolink_type type, const hoedown_renderer_data *data)
 {
@@ -88,7 +87,7 @@ static int rndr_linebreak(hoedown_buffer *ob, const hoedown_renderer_data *data)
 static void
 rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buffer *lang, const hoedown_renderer_data *data)
 {
-	HOEDOWN_BUFPUTSL(ob, "\n.RS\n");
+	HOEDOWN_BUFPUTSL(ob, ".RS\n");
 	if (text)
 	{	size_t i = 0;
 		size_t org;
@@ -108,7 +107,6 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 			if (i >= text->size - 1)
 				break;
 
-			HOEDOWN_BUFPUTSL(ob, "\n");
 			rndr_linebreak(ob, data);
 			i++;
 		}
@@ -120,10 +118,12 @@ static void
 rndr_blockquote(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	HOEDOWN_BUFPUTSL(ob, "<blockquote>\n");
 	if (content) hoedown_buffer_put(ob, content->data, content->size);
 	HOEDOWN_BUFPUTSL(ob, "</blockquote>\n");
+	*/
 }
 
 static int
@@ -140,12 +140,14 @@ static int
 rndr_strikethrough(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	if (!content || !content->size)
 		return 0;
 
 	HOEDOWN_BUFPUTSL(ob, "<del>");
 	hoedown_buffer_put(ob, content->data, content->size);
 	HOEDOWN_BUFPUTSL(ob, "</del>");
+	*/
 	return 1;
 }
 
@@ -157,6 +159,7 @@ rndr_double_emphasis(hoedown_buffer *ob, const hoedown_buffer *content, const ho
 
 	HOEDOWN_BUFPUTSL(ob, "\n.B ");
 	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "\n");
 
 	return 1;
 }
@@ -164,11 +167,12 @@ rndr_double_emphasis(hoedown_buffer *ob, const hoedown_buffer *content, const ho
 static int
 rndr_emphasis(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
-	TODO_CODEME_EXIT
-	if (!content || !content->size) return 0;
-	HOEDOWN_BUFPUTSL(ob, "<em>");
-	if (content) hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "</em>");
+	if (!content || !content->size)
+		return 0;
+	HOEDOWN_BUFPUTSL(ob, "\n.B ");
+	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "\n");
+
 	return 1;
 }
 
@@ -178,8 +182,9 @@ rndr_underline(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_
 	if (!content || !content->size)
 		return 0;
 
-	HOEDOWN_BUFPUTSL(ob, "\n.I ");
+	HOEDOWN_BUFPUTSL(ob, "\n.U ");
 	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "\n");
 
 	return 1;
 }
@@ -188,12 +193,14 @@ static int
 rndr_highlight(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	if (!content || !content->size)
 		return 0;
 
 	HOEDOWN_BUFPUTSL(ob, "<mark>");
 	hoedown_buffer_put(ob, content->data, content->size);
 	HOEDOWN_BUFPUTSL(ob, "</mark>");
+	*/
 
 	return 1;
 }
@@ -202,12 +209,14 @@ static int
 rndr_quote(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	if (!content || !content->size)
 		return 0;
 
 	HOEDOWN_BUFPUTSL(ob, "<q>");
 	hoedown_buffer_put(ob, content->data, content->size);
 	HOEDOWN_BUFPUTSL(ob, "</q>");
+	*/
 
 	return 1;
 }
@@ -215,7 +224,7 @@ rndr_quote(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_rend
 static int
 rndr_linebreak(hoedown_buffer *ob, const hoedown_renderer_data *data)
 {
-	HOEDOWN_BUFPUTSL(ob, ".br\n");
+	HOEDOWN_BUFPUTSL(ob, "\n.br\n");
 	return 1;
 }
 
@@ -225,13 +234,10 @@ rndr_header(hoedown_buffer *ob, const hoedown_buffer *content, int level, const 
 	switch(level)
 	{
 		case 2:
-			hoedown_buffer_printf(ob, ".SH \"", level);
-			if (content)
-				hoedown_buffer_put(ob, content->data, content->size);
-			hoedown_buffer_printf(ob, "\"\n", level);
+			hoedown_buffer_printf(ob, ".SH \"%*.*s\"\n", content->size, content->size, content->data);
 			break;
 		case 3:
-			hoedown_buffer_printf(ob, ".IP \"%*.*s\" %u\n", content->size,content->size,content->data,level);
+			hoedown_buffer_printf(ob, ".IP \"%*.*s\" %u\n", content->size, content->size, content->data, level);
 			break;
 	}
 }
@@ -240,6 +246,7 @@ static int
 rndr_link(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *link, const hoedown_buffer *title, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	hoedown_manpage_renderer_state *state = data->opaque;
 
 	HOEDOWN_BUFPUTSL(ob, "<a href=\"");
@@ -262,29 +269,38 @@ rndr_link(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffe
 
 	if (content && content->size) hoedown_buffer_put(ob, content->data, content->size);
 	HOEDOWN_BUFPUTSL(ob, "</a>");
+	*/
+
 	return 1;
 }
 
 static void
 rndr_list(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_list_flags flags, const hoedown_renderer_data *data)
 {
-	/*HOEDOWN_BUFPUTSL(ob, ".RS\n");*/
-	if (content) hoedown_buffer_put(ob, content->data, content->size);
-	/*HOEDOWN_BUFPUTSL(ob, ".RE\n");*/
+	if (!content || !content->size)
+		return;
+
+	hoedown_buffer_put(ob, content->data, content->size);
 }
 
 static void
 rndr_listitem(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_list_flags flags, const hoedown_renderer_data *data)
 {
-	HOEDOWN_BUFPUTSL(ob, ".br\n");
-	if (content) {
-		size_t size = content->size;
-		while (size && content->data[size - 1] == '\n')
-			size--;
+	size_t size = (content ? content->size : 0);
+	size_t f=0,l=0;
 
-		hoedown_buffer_put(ob, content->data, size);
+	while (size && content->data[size - 1] == '\n')
+		size--;
+
+	while(l<size)
+	{
+		while(l<size && content->data[l] != '\n')
+			l++;
+		hoedown_buffer_printf(ob, "%*.*s", l-f, l-f, &content->data[f]);
+		rndr_linebreak(ob, data);
+		l++;
+		f=l;
 	}
-	HOEDOWN_BUFPUTSL(ob, "\n");
 }
 
 static void
@@ -300,9 +316,7 @@ rndr_paragraph(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_
 	if (i == content->size)
 		return;
 
-	HOEDOWN_BUFPUTSL(ob, ".br\n");
-	hoedown_buffer_put(ob, content->data + i, content->size - i);
-	HOEDOWN_BUFPUTSL(ob, "\n");
+	hoedown_buffer_printf(ob, "%*.*s\n", content->size-i, content->size-i, content->data+i);
 }
 
 static void
@@ -332,31 +346,25 @@ rndr_raw_block(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_ren
 	hoedown_buffer_putc(ob, '\n');
 }
 
-static int
-rndr_triple_emphasis(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
-{
-	TODO_CODEME_EXIT
-	if (!content || !content->size) return 0;
-	HOEDOWN_BUFPUTSL(ob, "<strong><em>");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "</em></strong>");
-	return 1;
-}
-
 static void
 rndr_hrule(hoedown_buffer *ob, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	hoedown_manpage_renderer_state *state = data->opaque;
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	hoedown_buffer_puts(ob, USE_XHTML(state) ? "<hr/>\n" : "<hr>\n");
+	*/
 }
 
 static int
 rndr_raw_html(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	hoedown_buffer_put(ob, text->data, text->size);
+	*/
+
 	return 1;
 }
 
@@ -364,45 +372,54 @@ static void
 rndr_table(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
-    if (ob->size) hoedown_buffer_putc(ob, '\n');
-    HOEDOWN_BUFPUTSL(ob, "<table>\n");
-    hoedown_buffer_put(ob, content->data, content->size);
-    HOEDOWN_BUFPUTSL(ob, "</table>\n");
+	/*
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	HOEDOWN_BUFPUTSL(ob, "<table>\n");
+	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "</table>\n");
+	*/
 }
 
 static void
 rndr_table_header(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
-    if (ob->size) hoedown_buffer_putc(ob, '\n');
-    HOEDOWN_BUFPUTSL(ob, "<thead>\n");
-    hoedown_buffer_put(ob, content->data, content->size);
-    HOEDOWN_BUFPUTSL(ob, "</thead>\n");
+	/*
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	HOEDOWN_BUFPUTSL(ob, "<thead>\n");
+	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "</thead>\n");
+	*/
 }
 
 static void
 rndr_table_body(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
-    if (ob->size) hoedown_buffer_putc(ob, '\n');
-    HOEDOWN_BUFPUTSL(ob, "<tbody>\n");
-    hoedown_buffer_put(ob, content->data, content->size);
-    HOEDOWN_BUFPUTSL(ob, "</tbody>\n");
+	/*
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	HOEDOWN_BUFPUTSL(ob, "<tbody>\n");
+	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "</tbody>\n");
+	*/
 }
 
 static void
 rndr_tablerow(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	HOEDOWN_BUFPUTSL(ob, "<tr>\n");
 	if (content) hoedown_buffer_put(ob, content->data, content->size);
 	HOEDOWN_BUFPUTSL(ob, "</tr>\n");
+	*/
 }
 
 static void
 rndr_tablecell(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_table_flags flags, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	if (flags & HOEDOWN_TABLE_HEADER) {
 		HOEDOWN_BUFPUTSL(ob, "<th");
 	} else {
@@ -434,16 +451,20 @@ rndr_tablecell(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_table_
 	} else {
 		HOEDOWN_BUFPUTSL(ob, "</td>\n");
 	}
+	*/
 }
 
 static int
 rndr_superscript(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	if (!content || !content->size) return 0;
 	HOEDOWN_BUFPUTSL(ob, "<sup>");
 	hoedown_buffer_put(ob, content->data, content->size);
 	HOEDOWN_BUFPUTSL(ob, "</sup>");
+	*/
+
 	return 1;
 }
 
@@ -458,6 +479,7 @@ static void
 rndr_footnotes(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	hoedown_manpage_renderer_state *state = data->opaque;
 
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
@@ -468,16 +490,18 @@ rndr_footnotes(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_
 	if (content) hoedown_buffer_put(ob, content->data, content->size);
 
 	HOEDOWN_BUFPUTSL(ob, "\n</ol>\n</div>\n");
+	*/
 }
 
 static void
 rndr_footnote_def(hoedown_buffer *ob, const hoedown_buffer *content, unsigned int num, const hoedown_renderer_data *data)
 {
+	TODO_CODEME_EXIT
+	/*
 	size_t i = 0;
 	int pfound = 0;
 
-	TODO_CODEME_EXIT
-	/* insert anchor at the end of first paragraph block */
+	/ * insert anchor at the end of first paragraph block * /
 	if (content) {
 		while ((i+3) < content->size) {
 			if (content->data[i++] != '<') continue;
@@ -499,13 +523,17 @@ rndr_footnote_def(hoedown_buffer *ob, const hoedown_buffer *content, unsigned in
 		hoedown_buffer_put(ob, content->data, content->size);
 	}
 	HOEDOWN_BUFPUTSL(ob, "</li>\n");
+	*/
 }
 
 static int
 rndr_footnote_ref(hoedown_buffer *ob, unsigned int num, const hoedown_renderer_data *data)
 {
 	TODO_CODEME_EXIT
+	/*
 	hoedown_buffer_printf(ob, "<sup id=\"fnref%d\"><a href=\"#fn%d\" rel=\"footnote\">%d</a></sup>", num, num, num);
+	*/
+
 	return 1;
 }
 
@@ -555,7 +583,7 @@ hoedown_manpage_renderer_new(manpage_TH_t *pMpth, int nesting_level)
 		NULL,
 		rndr_linebreak,
 		rndr_link,
-		rndr_triple_emphasis,
+		NULL,
 		rndr_strikethrough,
 		rndr_superscript,
 		rndr_footnote_ref,
