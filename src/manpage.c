@@ -296,8 +296,7 @@ rndr_listitem(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_list_fl
 	{
 		while(l<size && content->data[l] != '\n')
 			l++;
-		hoedown_buffer_printf(ob, "%*.*s", l-f, l-f, &content->data[f]);
-		rndr_linebreak(ob, data);
+		hoedown_buffer_printf(ob, ".IP \\(bu 4\n%*.*s\n", l-f, l-f, &content->data[f]);
 		l++;
 		f=l;
 	}
