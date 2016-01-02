@@ -29,6 +29,7 @@ add_library(libhoedown
   src/list.c
   src/pool.c
   src/version.c
+  src/manpage.c
 
   src/_html_blocks.c
   src/_autolink_schemes.c

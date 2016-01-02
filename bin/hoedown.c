@@ -442,7 +442,7 @@ int main(int argc, char **argv) {
       renderer_free = hoedown_noop_renderer_free;
       break;
     case RENDERER_MANPAGE:
-      renderer = hoedown_manpage_renderer_new(&data.mpth, data.toc_level);
+      renderer = hoedown_manpage_renderer_new(&data.mpth);
       renderer_free = hoedown_manpage_renderer_free;
       break;
   };

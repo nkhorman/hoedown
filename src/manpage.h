@@ -51,30 +51,16 @@
 
 #include "document.h"
 #include "buffer.h"
+#include "pool.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-/*************
- * CONSTANTS *
- *************/
-
-	/*
-typedef enum hoedown_manpage_flags {
-	HOEDOWN_HTML_SKIP_HTML = (1 << 0),
-	HOEDOWN_HTML_ESCAPE = (1 << 1),
-	HOEDOWN_HTML_HARD_WRAP = (1 << 2),
-	HOEDOWN_HTML_USE_XHTML = (1 << 3)
-} hoedown_manpage_flags;
-
-typedef enum hoedown_manpage_tag {
-	HOEDOWN_HTML_TAG_NONE = 0,
-	HOEDOWN_HTML_TAG_OPEN,
-	HOEDOWN_HTML_TAG_CLOSE
-} hoedown_manpage_tag;
-*/
+/*********
+ * TYPES *
+ *********/
 
 typedef struct _manpage_TH_t
 {
@@ -85,29 +71,21 @@ typedef struct _manpage_TH_t
 	const char *extra3;	/* Header - center */
 } manpage_TH_t;
 
-
-/*********
- * TYPES *
- *********/
-
-struct hoedown_manpage_renderer_state {
+typedef struct hoedown_manpage_renderer_state {
 	void *opaque;
-
-	struct {
-		int header_count;
-		int current_level;
-		int level_offset;
-		int nesting_level;
-	} toc_data;
-
+	hoedown_pool objects;
+	size_t footnote_count;
+	hoedown_buffer *footnotes;
 	manpage_TH_t *pMpth;
+} hoedown_manpage_renderer_state;
 
-/*	hoedown_manpage_flags flags;*/
-
-	/* extra callbacks */
-	void (*link_attributes)(hoedown_buffer *ob, const hoedown_buffer *url, const hoedown_renderer_data *data);
-};
-typedef struct hoedown_manpage_renderer_state hoedown_manpage_renderer_state;
+typedef struct hoedown_manpage_renderer_object
+{
+	void *opaque;
+	hoedown_buffer *ob;
+	int is_tight;
+	int render_tags;
+} hoedown_manpage_renderer_object;
 
 
 /*************
@@ -115,10 +93,7 @@ typedef struct hoedown_manpage_renderer_state hoedown_manpage_renderer_state;
  *************/
 
 /* hoedown_manpage_renderer_new: allocates a ManPage renderer */
-hoedown_renderer *hoedown_manpage_renderer_new(
-	manpage_TH_t *pMpth,
-	int nesting_level
-) __attribute__ ((malloc));
+hoedown_renderer *hoedown_manpage_renderer_new( manpage_TH_t *pMpth) __attribute__ ((malloc));
 
 /* hoedown_manpage_renderer_free: deallocate a ManPage renderer */
 void hoedown_manpage_renderer_free(hoedown_renderer *renderer);
