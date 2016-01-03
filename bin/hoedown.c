@@ -408,6 +408,16 @@ int main(int argc, char **argv) {
   data.max_nesting = DEF_MAX_NESTING;
   data.features = presets_info[0].flags;
 
+  // get basename of executable
+  const char *pBasename = argv[0] + strlen(argv[0]) -1;
+
+  while(*pBasename && pBasename > argv[0] + 1 && *pBasename != '/' && *(pBasename-1) != '/')
+    pBasename --;
+
+  // are we mandown or hoedown
+  if(*pBasename && strcmp(pBasename, "mandown") == 0)
+    parse_long_option("man", NULL, &data);
+
   argc = parse_options(argc, argv, parse_short_option, parse_long_option, parse_argument, &data);
   if (data.done) return 0;
   if (!argc) return 1;
