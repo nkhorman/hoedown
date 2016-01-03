@@ -4,6 +4,7 @@
 *.lib
 hoedown
 libhoedown.*
+build
 
 Makefile
 CMakeFiles
