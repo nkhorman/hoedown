@@ -38,6 +38,9 @@ static void *object_get(int is_inline, hoedown_features feature, hoedown_preview
 static void object_merge(void *target, void *content, int is_inline, const hoedown_renderer_data *data) {}
 static void object_pop(void *target, int is_inline, const hoedown_renderer_data *data) {}
 
+// document header
+static void rndr_doc_header(void *target_, int is_block, const hoedown_renderer_data *data) {}
+
 static void render_start(int is_inline, const hoedown_renderer_data *data) {}
 static void *render_end(void *target, int is_inline, const hoedown_renderer_data *data) { return NULL; }
 
@@ -79,6 +82,8 @@ hoedown_renderer *hoedown_noop_renderer_new() {
     object_get,
     object_merge,
     object_pop,
+
+    rndr_doc_header,
 
     render_start,
     render_end,

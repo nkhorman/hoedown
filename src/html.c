@@ -44,6 +44,9 @@ static void object_pop(void *target_, int is_inline, const hoedown_renderer_data
 static void render_start(int is_inline, const hoedown_renderer_data *data) {
 }
 
+static void render_header(void *target_, int is_block, const hoedown_renderer_data *data) {
+}
+
 static void *render_end(void *target_, int is_inline, const hoedown_renderer_data *data) {
   hoedown_html_renderer_object *target = target_;
   hoedown_html_renderer_state *state = data->opaque;
@@ -400,6 +403,8 @@ hoedown_renderer *hoedown_html_renderer_new() {
     object_get,
     object_merge,
     object_pop,
+
+    render_header,
 
     render_start,
     render_end,

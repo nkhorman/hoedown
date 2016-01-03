@@ -3508,6 +3508,7 @@ void *hoedown_document_render(
   void *target = doc->rndr.object_get(is_block, 0, 0, NULL, &doc->data);
 
   // Render!
+  doc->rndr.render_document_header(target, is_block, &doc->data);
   if (is_block) {
     doc->mode = MARKER_PARSING;
     parse_block(doc, NULL, data, size, size, 0);

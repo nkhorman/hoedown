@@ -237,6 +237,9 @@ struct hoedown_renderer {
   void (*object_merge)(void *target, void *content, int is_block, const hoedown_renderer_data *data);
   void (*object_pop)(void *target, int is_block, const hoedown_renderer_data *data);
 
+  // document header
+  void (*render_document_header)(void *target, int is_block, const hoedown_renderer_data *data);
+
   void (*render_start)(int is_block, const hoedown_renderer_data *data);
   void *(*render_end)(void *target, int is_block, const hoedown_renderer_data *data);
 };
