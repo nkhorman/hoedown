@@ -65,4 +65,9 @@ if (BUILD_CLI)
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS hoedown
   )
+
+  add_custom_command(
+    TARGET hoedown POST_BUILD
+    COMMAND ln -sf hoedown mandown
+  )
 endif (BUILD_CLI)
