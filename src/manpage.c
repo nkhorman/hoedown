@@ -454,9 +454,39 @@ static void rndr_normal_text(void *target_, const hoedown_buffer *text, const ho
 		hoedown_buffer_put(ob, text->data, text->size);
 }
 
-/*
-static void rndr_doc_header(hoedown_buffer *ob, int inline_render, const hoedown_renderer_data *data)
+static void rndr_escape(void *target_, uint8_t character, const hoedown_renderer_data *data)
 {
+	TODO_CODEME_EXIT
+}
+
+static void rndr_entity(void *target_, const hoedown_buffer *text, const hoedown_renderer_data *data)
+{
+	TODO_CODEME_EXIT
+}
+
+static void rndr_math(void *target_, const hoedown_buffer *text, int is_inline, const hoedown_renderer_data *data)
+{
+	TODO_CODEME_EXIT
+}
+
+static void rndr_sidenote(void *target_, void *text_, const hoedown_renderer_data *data)
+{
+	TODO_CODEME_EXIT
+}
+
+static void rndr_emoji(void *target_, const hoedown_buffer *text, const hoedown_renderer_data *data)
+{
+	TODO_CODEME_EXIT
+}
+
+static void rndr_typography(void *target_, const hoedown_buffer *text, const hoedown_renderer_data *data)
+{
+	TODO_CODEME_EXIT
+}
+
+static void rndr_doc_header(void *target_, int is_block, const hoedown_renderer_data *data)
+{
+	hoedown_buffer *ob = ((hoedown_manpage_renderer_object *)target_)->ob;
 	hoedown_manpage_renderer_state *state = data->opaque;
 	manpage_TH_t *pMpth = state->pMpth;
 
@@ -468,7 +498,6 @@ static void rndr_doc_header(hoedown_buffer *ob, int inline_render, const hoedown
 		, pMpth->extra3 ? pMpth->extra3 : ""
 		);
 }
-*/
 
 hoedown_renderer *
 hoedown_manpage_renderer_new(manpage_TH_t *pMpth)
@@ -488,26 +517,28 @@ hoedown_manpage_renderer_new(manpage_TH_t *pMpth)
 		rndr_raw_block,
 
 		rndr_normal_text, // string
-		NULL, // escape
+		rndr_escape,
 		rndr_linebreak,
 		rndr_autolink, // uri link
 		rndr_autolink, // email link
 		rndr_raw_html,
-		NULL, // entity
+		rndr_entity,
 		rndr_codespan, // code
 		rndr_emphasis,
 		rndr_link,
-		NULL, // math
+		rndr_math,
 		rndr_superscript,
 		rndr_strikethrough,
 		rndr_highlight,
-		NULL, // side note
-		NULL, // emoji
-		NULL, // typography
+		rndr_sidenote,
+		rndr_emoji,
+		rndr_typography,
 
 		object_get,
 		object_merge,
 		object_pop,
+
+		rndr_doc_header,
 
 		render_start,
 		render_end,
