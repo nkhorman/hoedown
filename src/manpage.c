@@ -199,13 +199,15 @@ static void rndr_blockquote(void *target_, void *text_, const hoedown_renderer_d
 
 	hoedown_buffer *ob = ((hoedown_manpage_renderer_object *)target_)->ob;
 
-	HOEDOWN_BUFPUTSL(ob, "\n.PP\n.RS\n");
+	//HOEDOWN_BUFPUTSL(ob, ".PP\n.RS\n");
+	HOEDOWN_BUFPUTSL(ob, ".RS\n");
 	size_t size = text->size;
 	while (size && text->data[size - 1] == '\n')
 		size--;
 
 	hoedown_buffer_put(ob, text->data, size);
-	HOEDOWN_BUFPUTSL(ob, "\n.RE\n");
+	HOEDOWN_BUFPUTSL(ob, "\n.RE");
+	rndr_linebreak(target_, 0, 0, data);
 }
 
 static void rndr_codespan(void *target_, const hoedown_buffer *text, const hoedown_renderer_data *data)
